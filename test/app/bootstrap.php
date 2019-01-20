@@ -12,6 +12,7 @@ use Phalcon\Loader;
 use Phalcon\Mvc\View;
 use Phalcon\Mvc\Router;
 use Phalcon\Mvc\Url;
+use Phalcon\Mvc\Collection\Manager;
 use Phalcon\Queue\Beanstalk;
 use Library\Php;
 
@@ -81,6 +82,19 @@ final class Bootstrap
         switch ($this->context) {
             case self::CONTEXT_WEB:
                 $di = new FactoryDefault();
+                break;
+            case self::CONTEXT_CLI:
+                $di = new Cli();
+                break;
+            default:
+                Php::assert(false);
+        }
+
+        $di->setShared('config', $this->config);
+
+        switch ($this->context) {
+            case self::CONTEXT_WEB:
+                $di = new FactoryDefault();
 
                 $di->set('url',
                     function (): Url {
@@ -118,16 +132,19 @@ final class Bootstrap
                 Php::assert(false);
         }
 
-        $di->setShared('queue',
+        $di->setShared('beanstalk',
             function (): Beanstalk {
                 return new Beanstalk($this->config->beanstalk->toArray());
             }
         );
-        $di->setShared('database',
+        $di->setShared('mongo',
             function (): Client {
-                return (new Client())->selectDatabase($config->mongo->database);
+                return (new Client())->selectDatabase($this->config->mongo->database);
             }
         );
+        $di->setShared('collectionManager', function (): Manager {
+            return new Manager();
+        });
 
         /**
          * Note: This is naive in its reliance on defaults and given that it offers one way hashing

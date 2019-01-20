@@ -1,8 +1,12 @@
 version: "3"
 services:
-  api:
+  build:
     build: docker/app
-    working_dir: /app
+    image: app
+    volumes:
+      - .:/app
+  api:
+    image: app
     entrypoint:
         - php
         - -S
@@ -11,30 +15,28 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./test:/app
+      - .:/app
     depends_on:
       - mongo
       - beanstalk
   job:
-    build: docker/app
-    working_dir: /app
+    image: app
     entrypoint:
         - php
         - app/cli.php ProcessQueue
     ports:
       - "80:80"
     volumes:
-      - ./test:/app
+      - .:/app
     depends_on:
       - mongo
       - beanstalk
   test:
-    build: docker/app
-    working_dir: /app
+    image: app
     entrypoint:
         - phpunit
     volumes:
-      - ./test:/app
+      - .:/app
     depends_on:
       - mongo
       - beanstalk

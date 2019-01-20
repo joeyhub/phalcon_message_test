@@ -108,3 +108,5 @@ Hiccups:
 
     Things such as this: https://docs.phalconphp.com/en/3.4/environments-docker
     Have disappeared. Meaning this task is problably mor involving then it used to be.
+
+    PHP 7.3 segfaults with mongo.

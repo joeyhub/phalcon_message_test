@@ -13,13 +13,14 @@ use Phalcon\Mvc\Collection;
 class Users extends Collection
 {
     /** @var string */
-    private $id;
+    public $id;
     /** @var string */
-    private $username;
+    public $username;
     /** @var string */
-    private $password;
+    public $password;
     /** @var int */
-    private $reads;
-    /** @var array Of what? */
-    private $messages;
+    public $reads;
+    // Note: Could use a messages type class.
+    /** @var array */
+    public $messages;
 }

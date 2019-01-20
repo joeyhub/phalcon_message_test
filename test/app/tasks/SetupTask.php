@@ -10,12 +10,13 @@ class SetupTask extends Task
     public function createTestUserAction()
     {
         $user = new Users();
+
         $user->username = 'test';
-        $user->password = 'password';
+        $user->password = $this->security->hash('password');
         // Note: Might be more or less efficient to keep it empty when empty depending on scenario.
         $user->messages = [];
-var_dump("no");
-        if ($robot->save() === false) {
+
+        if ($user->save() === false) {
             Php::assert(false, implode("\n", $user->getMessages()));
         }
     }
