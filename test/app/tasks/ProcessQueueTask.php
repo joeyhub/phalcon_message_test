@@ -10,7 +10,10 @@ class ProcessQueueTask extends Task
     {
         while (($job = $queue->reserve()) !== false) {
             $message = $job->getBody();
-            
+            $user = Users::findById()
+            $user->messages[] = $message['message'];
+            $user->reads++;
+            $user->save();
 
             $job->delete();
         }

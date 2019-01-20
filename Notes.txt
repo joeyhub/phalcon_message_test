@@ -96,3 +96,12 @@ Hiccups:
     I has a little but of fun with loading the configuration. There are a few approaches to this and IDE
     went from high level to low level. Starting with new Config([arr]) to Factory::load to Grouped.
     I found a potential issue with grouped which I reported on github.
+
+    I didn't go the Micro/Slim route and probably have over-engineered things.
+    This is compounded by issues with implementations such as JWT which in about
+    convoluted way wraps around the MicroApp when all it really needs is to take
+    an interface of both di and events (oir separately) or a common sub class to micro
+    and app.
+
+    As this is only the second time I've used phalcon and the first time was more trivial use
+    there's an awful lot I'd do differently another time around.

@@ -1,5 +1,6 @@
 <?php
 
+// Note: Many of these could come from env.
 return [
     'url' => ['baseUri' => '/'],
     'beanstalk' => [
@@ -7,5 +8,6 @@ return [
         'host' => '127.0.0.1',
         'port' => '11300'
     ],
-    'mongo' => ['database' => 'chip']
+    'mongo' => ['database' => 'chip'],
+    'jwtAuth' => ['secretKey' => 'should not be static']
 ];

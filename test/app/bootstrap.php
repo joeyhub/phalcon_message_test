@@ -98,12 +98,16 @@ final class Bootstrap
                         return $router;
                     }
                 );
+                // Note: Very poor astraction for using other authenticators.
+                $di->setShared('auth', function (): Jwt {
+                    return new Jwt($this->config->jwt->secretKey);
+                });
 
                 break;
             case self::CONTEXT_CLI:
                 $di = new Cli();
 
-                $di->setShared('dispatcher', function () {
+                $di->setShared('dispatcher', function (): Dispatcher {
                     $dispatcher = new Dispatcher();
                     $dispatcher->setDefaultNamespace('Task');
 
