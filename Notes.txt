@@ -1,0 +1,98 @@
+Original Requirements:
+    Chat app.
+
+    * Make Rest API doing:
+        * login with JWT ot PAST
+        * return message history including counter
+        * async let the user send a message
+    * phalcon framework, mongodb persistence, docker runtimes (docker compose)
+    * coverage in tests and send to github
+
+Unclear (I would usually ask about these but I think I can make sane assumptions):
+    * Field with times messages retrieved counter should include current or not?
+    * REST format, JSON is the obvious choice.
+    * To/From, title, etc I'll leave out at the start.
+
+Approximate approach:
+    1. Make it work. Git init into this process.
+    2. Add authentication.
+    3. Clean up.
+    4. Add docker-compose: PHP Phalcon + MongoDB + beanstalkd
+    5. Add tests.
+        PHP Unit, go for coverage but I'll probably skip being strictly unit tests (whatever gets coverage easily).
+    6. Consider missing bits.
+    7. Review and cleanup.
+    8. Upload to github (push).
+
+Platform:
+    IDE: Windows 7, Notepad++, ditto
+    DEV: Centos 7, EPEL/REMI/MONGO/DOCKER repos, PHP 7.3.1 + phalcon 3.4.2, beanstalkd 1.1, mongodb 4.0.5
+    Docker: docker 1.13.1, docker-compose 1.23.2 (from pip)
+
+    Note that I already have a dev box setup so for that reason wont jump straight into docker.
+    Consider php 7.2 for docker as might be more stable (less cutting edge).
+
+Conventions:
+    Generally adhering to PSR2.
+    Not using portability. For example / will be used at the path seprator.
+    In the real world we'd usually only develop for one major platform
+    and chances are even if not virtualisation or docker would provide
+    platform requirements.
+
+Tech notes:
+    I'm quite enthusiastic about phalcon but I haven't used it much as all.
+    I've used mongo and for this kind of talk things such as mongo and beanstalk
+    generally lend well to being expanded into a scaled architecture.
+    However care needs to be taken for criticial data such as finances
+    as certain redistribution of responsibility and other things are done
+    to achieve performance related potentials.
+
+IO:
+    REST
+        Needs session though, but JWT doesn't require session. PAST?
+        Tempted to try with both as I've not see PAST in action before.
+
+Database/Model:
+    User
+        Id
+        Username string
+        Password string
+        MessageListCount int
+        Created datetime
+    Message
+        Id
+        Content string
+        Created datetime
+
+    It's mongo though so user can have Message[] inside user. Given that the requirements only ask for that I'll stick to that as it's the simplest thing that could possibly work.
+    Just keep them in insertion order.
+
+Docker:
+    php with phalcon + mongo + beanstalk
+
+Tests:
+    PHP Unit.
+    It's not asking for unit tests specifically just that it be tested and that it cover code so integration tests will likely be alright.
+    As in it asks for coverage so presumably how you achieve that is whatever method works best.
+
+Needs:
+    Config + Bootstrap
+    Front controllers - CLI/REST modes. CLI might also include util scripts.
+    Queue - use beanstalk
+    ORM / Model (User, Messages)
+    Collection needs to be created (migration for mongo?).
+    Routing / Controller -> Queue service
+    CLI front controller -> Consume Service
+    Service layers. Service routing/hooks?
+    CLI version for consuming the queue? Can be fetch one at a time but realistically you'd probably want it constantly consuming (deamonised, etc).
+
+Hiccups:
+
+    It turns out that mongo support in phalcon doesn't appear to be complete in PHP 7.
+
+    There are quite a few conventions for folders and namespaces. I've just done what works
+    which has some issues such as a mix of plural and singular accross contexts.
+
+    I has a little but of fun with loading the configuration. There are a few approaches to this and IDE
+    went from high level to low level. Starting with new Config([arr]) to Factory::load to Grouped.
+    I found a potential issue with grouped which I reported on github.
