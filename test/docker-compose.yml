@@ -1,0 +1,59 @@
+version: "3"
+services:
+  api:
+    build: docker/app
+    working_dir: /app
+    entrypoint:
+        - php
+        - -S
+        - 0.0.0.0:80
+        - router.php
+    ports:
+      - "80:80"
+    volumes:
+      - ./test:/app
+    depends_on:
+      - mongo
+      - beanstalk
+  job:
+    build: docker/app
+    working_dir: /app
+    entrypoint:
+        - php
+        - app/cli.php ProcessQueue
+    ports:
+      - "80:80"
+    volumes:
+      - ./test:/app
+    depends_on:
+      - mongo
+      - beanstalk
+  test:
+    build: docker/app
+    working_dir: /app
+    entrypoint:
+        - phpunit
+    volumes:
+      - ./test:/app
+    depends_on:
+      - mongo
+      - beanstalk
+  mongo:
+   restart: always
+   image: mongo:4.0.5
+   expose:
+     - "27017"
+   ports:
+     - "27017:27017"
+   volumes:
+     - mongo:/data/db
+  beanstalk:
+    restart: always
+    image: phalconphp/beanstalkd:1.10
+    ports:
+      - "11300:11300"
+    volumes:
+      - beanstalk:/var/lib/beanstalkd
+volumes:
+    mongo: ~
+    beanstalk: ~

@@ -1,5 +1,6 @@
 {
     "require": {
-        "phalcon/incubator": "^3.4"
+        "phalcon/incubator": "^3.4",
+        "dmkit/phalcon-jwt-auth": "^1.0"
     }
 }

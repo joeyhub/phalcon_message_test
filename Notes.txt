@@ -27,7 +27,7 @@ Approximate approach:
 Platform:
     IDE: Windows 7, Notepad++, ditto
     DEV: Centos 7, EPEL/REMI/MONGO/DOCKER repos, PHP 7.3.1 + phalcon 3.4.2, beanstalkd 1.1, mongodb 4.0.5
-    Docker: docker 1.13.1, docker-compose 1.23.2 (from pip)
+    Docker: docker 18.09.1, docker-compose 1.23.2 (from pip)
 
     Note that I already have a dev box setup so for that reason wont jump straight into docker.
     Consider php 7.2 for docker as might be more stable (less cutting edge).
@@ -105,3 +105,6 @@ Hiccups:
 
     As this is only the second time I've used phalcon and the first time was more trivial use
     there's an awful lot I'd do differently another time around.
+
+    Things such as this: https://docs.phalconphp.com/en/3.4/environments-docker
+    Have disappeared. Meaning this task is problably mor involving then it used to be.
