@@ -82,9 +82,11 @@ final class Bootstrap
         switch ($this->context) {
             case self::CONTEXT_WEB:
                 $di = new FactoryDefault();
+
                 break;
             case self::CONTEXT_CLI:
                 $di = new Cli();
+
                 break;
             default:
                 Php::assert(false);
@@ -127,6 +129,7 @@ final class Bootstrap
 
                     return $dispatcher;
                 });
+
                 break;
             default:
                 Php::assert(false);
