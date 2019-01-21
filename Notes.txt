@@ -114,3 +114,10 @@ Hiccups:
     There are a lot of things missing such as write concerns, consideration for why the queue process might return false, etc.
 
     Weird issues with docker-compose. For one service it simply refuses to mount the host directory no matter what.
+
+    Getting unit tests to work elegantly in phalcon is more work than I envisaged (even integration tests).
+    Fell back to CLI.
+
+    No time for DRY and abstraction in places.
+
+    Not hiding errors / displaying them properly.

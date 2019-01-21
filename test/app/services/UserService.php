@@ -36,22 +36,24 @@ class UserService extends Injectable
     public function getById(string $id)
     {
         $class = $this->class;
-        $user = $class::getById($id);
-        self::assertIsUser($user);
+        $user = $class::findById($id);
+        $this->assertIsUser($user);
 
         return $user;
     }
 
-    public function login(string $username, string $password): void
+    public function login(string $username, string $password): string
     {
         $class = $this->class;
         $user = $class::findFirst([compact('username')]);
-        self::assertIsUser($user);
+        $this->assertIsUser($user);
         Php::assert($this->security->checkHash($password, $user->password));
+
+        return $user->getId();
     }
 
-    public static function assertIsUser($user): void
+    public function assertIsUser($user): void
     {
-        Php::assert(is_object($user) && is_a($user, $class));
+        Php::assert(is_object($user) && is_a($user, $this->class));
     }
 }

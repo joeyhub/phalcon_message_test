@@ -33,7 +33,7 @@ final class MessageController extends Controller
         }
 
         Php::assert($this->request->isGet());
-        $user = $this->users->findById($this->jwt->getUserId());
+        $user = $this->users->getById($this->jwt->getUserId());
         $reads = $user->reads++;
         Php::assert($user->save() !== false);
 

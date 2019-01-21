@@ -14,8 +14,7 @@ final class AuthenticationController extends Controller
         Php::assert($this->request->isPost());
         $username = $this->request->getPost('username', [Filter::FILTER_STRING]);
         $password = $this->request->getPost('password', [Filter::FILTER_STRING]);
-        $user = $this->users->login($username, $password);
 
-        return json_encode($this->jwt->make($user->getId()));
+        return json_encode($this->jwt->make($this->users->login($username, $password)));
     }
 }

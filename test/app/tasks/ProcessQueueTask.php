@@ -12,7 +12,7 @@ class ProcessQueueTask extends Task
     {
         while (($job = $this->beanstalk->reserve()) !== false) {
             $message = $job->getBody();
-            $user = Users::findById($message['user']);
+            $user = $this->users->getById($message['user']);
             $user->messages[] = $message['message'];
             Php::assert($user->save() !== false);
 
