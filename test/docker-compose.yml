@@ -1,17 +1,37 @@
 version: "3"
 services:
-  build:
+  base:
     build: docker/app
     image: app
+  install:
+    image: app
+    entrypoint:
+      - bash
+      - build.sh
     volumes:
       - .:/app
-  api:
+    depends_on:
+      - mongo
+  test:
     image: app
     entrypoint:
         - php
-        - -S
-        - 0.0.0.0:80
-        - router.php
+        - -m
+    volumes:
+      - .:/app
+    depends_on:
+      - mongo
+      - beanstalk
+  api:
+    restart: always
+    image: app
+    entrypoint:
+      - php
+      - -S
+      - 0.0.0.0:80
+      - router.php
+    expose:
+      - "80"
     ports:
       - "80:80"
     volumes:
@@ -20,20 +40,12 @@ services:
       - mongo
       - beanstalk
   job:
+    restart: always
     image: app
     entrypoint:
-        - php
-        - app/cli.php ProcessQueue
-    volumes:
-      - .:/app
-    depends_on:
-      - mongo
-      - beanstalk
-  test:
-    image: app
-    entrypoint:
-        - php
-        - -m
+      - php
+      - app/cli.php
+      - ProcessQueue
     volumes:
       - .:/app
     depends_on:
@@ -48,13 +60,19 @@ services:
      - "27017:27017"
    volumes:
      - mongo:/data/db
+   healthcheck:
+     test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
   beanstalk:
     restart: always
     image: phalconphp/beanstalkd:1.10
+    expose:
+      - "11300"
     ports:
       - "11300:11300"
     volumes:
       - beanstalk:/var/lib/beanstalkd
+    healthcheck:
+      test: ["CMD-SHELL", "(set -o pipefail;echo quit | nc localhost 11300) && echo OK"]
 volumes:
-    mongo: ~
-    beanstalk: ~
+  mongo: ~
+  beanstalk: ~

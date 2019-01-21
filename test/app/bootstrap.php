@@ -16,6 +16,7 @@ use Phalcon\Mvc\Url;
 use Phalcon\Mvc\Collection\Manager;
 use Phalcon\Queue\Beanstalk;
 use Library\Php;
+use Library\Jwt;
 
 /**
  * This class assembles code required for bootstrapping an application
@@ -113,8 +114,11 @@ final class Bootstrap
                     return $router;
                 });
                 // Note: Very poor astraction for using other authenticators.
-                $di->setShared('auth', function () use($config): Jwt {
+                $di->setShared('jwt', function () use($config): Jwt {
                     return new Jwt($config->jwt->secretKey);
+                });
+                $di->setShared('view', function (): View {
+                    return new View();
                 });
 
                 break;
@@ -135,7 +139,7 @@ final class Bootstrap
             return new Beanstalk($config->beanstalk->toArray());
         });
         $di->setShared('mongo', function () use($config): Database {
-            return (new Client())->selectDatabase($config->mongo->database);
+            return (new Client("mongodb://{$config->mongo->host}"))->selectDatabase($config->mongo->database);
         });
         $di->setShared('collectionManager', function (): Manager {
             return new Manager();

@@ -10,4 +10,8 @@ final class IndexController extends Controller
     {
         $this->response->setStatusCode(404, 'Not found.');
     }
+
+    public function pingAction(): void
+    {
+    }
 }

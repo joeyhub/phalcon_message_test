@@ -4,6 +4,7 @@ namespace Controller;
 
 use Phalcon\Mvc\Controller;
 use Phalcon\Filter;
+use Model\Users;
 use Library\Php;
 
 final class MessageController extends Controller
@@ -11,7 +12,7 @@ final class MessageController extends Controller
     public function sendAction(): ?string
     {
         // Note: This should be abstracted away and DRY.
-        if (!$this->auth->check($this->request)) {
+        if (!$this->jwt->check($this->request, $this->response)) {
             return null;
         }
 
@@ -23,20 +24,20 @@ final class MessageController extends Controller
         Php::assert(mb_check_encoding($message));
 
         // Note: This should be abstracted away and DRY.
-        return json_encode($this->queue->put(['user' => $this->auth->getUserId(), 'message' => $message]));
+        return json_encode($this->beanstalk->put(['user' => $this->jwt->getUserId(), 'message' => $message]));
     }
 
-    public function listSentAction(): ?string
+    public function sentAction(): ?string
     {
-        if (!$this->auth->check($this->request)) {
+        if (!$this->jwt->check($this->request, $this->response)) {
             return null;
         }
 
         Php::assert($this->request->isGet());
-        $user = Users::findById($this->auth->getUserId());
+        $user = Users::findById($this->jwt->getUserId());
         $reads = $user->reads++;
         Php::assert($user->save() !== false);
 
-        return json_encode([compact('reads'), 'messages' => $user->messages]);
+        return json_encode(compact('reads') + ['messages' => $user->messages]);
     }
 }

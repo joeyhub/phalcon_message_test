@@ -3,6 +3,7 @@
 namespace Library;
 
 use Phalcon\Http\RequestInterface;
+use Phalcon\Http\ResponseInterface;
 // Note: Dmkit has quality issues, it should be kept behind this wrapper.
 use Dmkit\Phalcon\Auth\Auth;
 use Dmkit\Phalcon\Auth\TokenGetter\TokenGetter;
@@ -18,6 +19,7 @@ class Jwt
 
     public function __construct(string $secretKey)
     {
+        $this->secretKey = $secretKey;
         $this->auth = new Auth();
     }
 
@@ -26,9 +28,9 @@ class Jwt
         return $this->auth->make(compact('userId'), $this->secretKey);
     }
 
-    public function check(Request $request, Response $response): bool
+    public function check(RequestInterface $request, ResponseInterface $response): bool
     {
-        $getter = new TokenGetter(new Header($request), new QueryStr($request));
+        $getter = new TokenGetter(new Header($request));
 
         if ($this->auth->check($getter, $this->secretKey)) {
             return true;
@@ -37,17 +39,12 @@ class Jwt
         // Note: This could include authorise location.
         // Note: Authentication shouldn't really be coupled with IO concerns.
         $response->setStatusCode(401, 'Unauthorized');
-        // Note: Could have + problem.
-        $response->setContentType('application/json');
-        // Note: What about the other messages?
-        $response->setContent(json_encode([$authMicro->getMessages()[0]]));
-        $response->send();
 
         return false;
     }
 
     public function getUserId(): string
     {
-        return $this->auth->userId;
+        return $this->auth->data('userId');
     }
 }

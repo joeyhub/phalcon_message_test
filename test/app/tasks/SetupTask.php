@@ -13,8 +13,6 @@ class SetupTask extends Task
 
         $user->username = 'test';
         $user->password = $this->security->hash('password');
-        // Note: Might be more or less efficient to keep it empty when empty depending on scenario.
-        $user->messages = [];
 
         if ($user->save() === false) {
             Php::assert(false, implode("\n", $user->getMessages()));

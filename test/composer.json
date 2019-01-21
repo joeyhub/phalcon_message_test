@@ -1,6 +1,7 @@
 {
     "require": {
         "phalcon/incubator": "^3.4",
-        "dmkit/phalcon-jwt-auth": "^1.0"
+        "dmkit/phalcon-jwt-auth": "^1.0",
+        "phpunit/phpunit": "^7.5"
     }
 }

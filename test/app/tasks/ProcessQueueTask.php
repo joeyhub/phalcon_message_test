@@ -3,17 +3,18 @@
 namespace Task;
 
 use Phalcon\Cli\Task;
+use Model\Users;
+use Library\Php;
 
 class ProcessQueueTask extends Task
 {
     public function mainAction()
     {
-        while (($job = $queue->reserve()) !== false) {
+        while (($job = $this->beanstalk->reserve()) !== false) {
             $message = $job->getBody();
-            $user = Users::findById()
+            $user = Users::findById($message['user']);
             $user->messages[] = $message['message'];
-            $user->reads++;
-            $user->save();
+            Php::assert($user->save() !== false);
 
             $job->delete();
         }

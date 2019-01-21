@@ -5,9 +5,9 @@ return [
     'url' => ['baseUri' => '/'],
     'beanstalk' => [
         // Note: TCP
-        'host' => '127.0.0.1',
+        'host' => 'beanstalk',
         'port' => '11300'
     ],
     'mongo' => ['host' => 'mongo', 'database' => 'chip'],
-    'jwtAuth' => ['secretKey' => 'should not be static']
+    'jwt' => ['secretKey' => 'should not be static']
 ];

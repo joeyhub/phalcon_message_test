@@ -2,7 +2,7 @@
 
 namespace Model;
 
-use Phalcon\Mvc\Collection;
+use Phalcon\Mvc\MongoCollection;
 
 /**
  * use chip
@@ -10,17 +10,15 @@ use Phalcon\Mvc\Collection;
  * db.members.createIndex({username: 1}, {unique: true});
  */
 
-class Users extends Collection
+class Users extends MongoCollection
 {
-    /** @var string */
-    public $id;
     /** @var string */
     public $username;
     /** @var string */
     public $password;
     /** @var int */
-    public $reads;
+    public $reads = 0;
     // Note: Could use a messages type class.
     /** @var array */
-    public $messages;
+    public $messages = [];
 }
