@@ -16,7 +16,7 @@ services:
     image: app
     entrypoint:
         - php
-        - -m
+        - app/test.php
     volumes:
       - .:/app
     depends_on:

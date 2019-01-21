@@ -1,6 +1,5 @@
 <?php
 
-use Phalcon\Mvc\Application;
 use Phalcon\Cli\Console;
 
 call_user_func(function($argv): void {

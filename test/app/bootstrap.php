@@ -15,6 +15,8 @@ use Phalcon\Mvc\Router;
 use Phalcon\Mvc\Url;
 use Phalcon\Mvc\Collection\Manager;
 use Phalcon\Queue\Beanstalk;
+use Model\Users;
+use Service\UserService;
 use Library\Php;
 use Library\Jwt;
 
@@ -32,6 +34,7 @@ final class Bootstrap
     const PATH_VENDOR = 'vendor';
 
     const ENVIRONMENT_PRODUCTION = 'production';
+    const ENVIRONMENT_TEST = 'test';
     const DEFAULT_ENVIRONMENT = self::ENVIRONMENT_PRODUCTION;
 
     const CONTEXT_WEB = 'web';
@@ -43,6 +46,7 @@ final class Bootstrap
         'Controller' => 'controllers',
         'Task' => 'tasks',
         'Model' => 'models',
+        'Service' => 'services',
         'Library' => 'libraries'
     ];
 
@@ -135,6 +139,13 @@ final class Bootstrap
                 Php::assert(false);
         }
 
+        $di->setShared('users', function (): UserService {
+            $users = new UserService(Users::class);
+            $users->setDi($this);
+
+            return $users;
+        });
+
         $di->setShared('beanstalk', function () use($config): Beanstalk {
             return new Beanstalk($config->beanstalk->toArray());
         });
@@ -194,11 +205,19 @@ final class Bootstrap
         });
     }
 
-    public static function initialise(string $context): self
+    /** @var self */
+    private static $instance;
+
+    public static function getInstance(): self
+    {
+        return self::$instance;
+    }
+
+    public static function initialise(string $context, string $environment = self::DEFAULT_ENVIRONMENT): self
     {
         self::initialiseErrorHandling();
         $basePath = dirname(__DIR__);
         self::initialiseLoader($basePath);
-        return new self($basePath, self::DEFAULT_ENVIRONMENT, $context);
+        return self::$instance = new self($basePath, $environment, $context);
     }
 }

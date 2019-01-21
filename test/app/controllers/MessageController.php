@@ -4,7 +4,6 @@ namespace Controller;
 
 use Phalcon\Mvc\Controller;
 use Phalcon\Filter;
-use Model\Users;
 use Library\Php;
 
 final class MessageController extends Controller
@@ -34,7 +33,7 @@ final class MessageController extends Controller
         }
 
         Php::assert($this->request->isGet());
-        $user = Users::findById($this->jwt->getUserId());
+        $user = $this->users->findById($this->jwt->getUserId());
         $reads = $user->reads++;
         Php::assert($user->save() !== false);
 

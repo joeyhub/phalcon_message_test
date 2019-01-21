@@ -7,15 +7,13 @@ use Model\Users;
 
 class SetupTask extends Task
 {
-    public function createTestUserAction()
+    public function createUserCollectionAction(): void
     {
-        $user = new Users();
+        $this->users->createCollection();
+    }
 
-        $user->username = 'test';
-        $user->password = $this->security->hash('password');
-
-        if ($user->save() === false) {
-            Php::assert(false, implode("\n", $user->getMessages()));
-        }
+    public function createTestUserAction(): void
+    {
+        $this->users->create('test', 'password');
     }
 }
