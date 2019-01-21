@@ -32,8 +32,9 @@ Test for errors (depends on first test for services):
     curl -q -X POST -d 'username=test&password=wrong' http://localhost/authentication/getJwt
     curl -X GET -H "Authorization: Bearer $jwt" http://localhost/message/sent
     curl -v -X GET -H "Authorization: Bearer $jwt" http://localhost/message/send
+    # Note: This passes, it shouldn't!
     curl -v -X POST -H "Authorization: Bearer $jwt" http://localhost/message/send
-    curl -v -X POST -H "Authorization: Bearer $jwt" -d "message=\xc3\x28" http://localhost/message/send
+    curl -v -X POST -H "Authorization: Bearer $jwt" -d "message=$(echo -en \\xc3\\x28)" http://localhost/message/send
 )
 ```
 

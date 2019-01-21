@@ -121,3 +121,4 @@ Hiccups:
     No time for DRY and abstraction in places.
 
     Not hiding errors / displaying them properly.
+    Error handling in general is the absolute minimum (throw exception).
