@@ -24,8 +24,6 @@ services:
     entrypoint:
         - php
         - app/cli.php ProcessQueue
-    ports:
-      - "80:80"
     volumes:
       - .:/app
     depends_on:
@@ -34,7 +32,8 @@ services:
   test:
     image: app
     entrypoint:
-        - phpunit
+        - php
+        - -m
     volumes:
       - .:/app
     depends_on:

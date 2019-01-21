@@ -1,11 +1,11 @@
 Run:
 
 
-```php -S 0.0.0.0:80 router.php```
+docker-compose build
 
-docker-compose run
+docker run --rm -it -v "$(pwd):/app" app php app/cli.php Setup createTestUser
 
-php app/cli.php Setup createTestUser
+
+docker-compose up
 
 docker run --rm -it -v "$(pwd):/app" app /bin/bash
-docker run --rm -it -v "$(pwd):/app" app php app/cli.php Setup createTestUser

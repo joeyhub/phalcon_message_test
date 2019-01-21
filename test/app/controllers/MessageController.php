@@ -33,7 +33,10 @@ final class MessageController extends Controller
         }
 
         Php::assert($this->request->isGet());
+        $user = Users::findById($this->auth->getUserId());
+        $reads = $user->reads++;
+        Php::assert($user->save() !== false);
 
-        return json_encode(Users::findById($this->auth->getUserId())->messages);
+        return json_encode([compact('reads'), 'messages' => $user->messages]);
     }
 }

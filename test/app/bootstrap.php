@@ -2,6 +2,7 @@
 
 use Phalcon\Config;
 use Phalcon\Db\Adapter\MongoDB\Client;
+use Phalcon\Db\Adapter\MongoDB\Database;
 use Phalcon\DiInterface;
 use Phalcon\Di\FactoryDefault;
 use Phalcon\Di\FactoryDefault\Cli;
@@ -77,8 +78,11 @@ final class Bootstrap
         return implode('/', $parts);
     }
 
+    // Note: This looks like it can provide more than one DI such as for testing but won't work as Phalcon uses a singleton by default.
     public function getDi(): DiInterface
     {
+        $config = $this->config;
+
         switch ($this->context) {
             case self::CONTEXT_WEB:
                 $di = new FactoryDefault();
@@ -92,37 +96,29 @@ final class Bootstrap
                 Php::assert(false);
         }
 
-        $di->setShared('config', $this->config);
+        $di->setShared('config', $config);
 
         switch ($this->context) {
             case self::CONTEXT_WEB:
-                $di = new FactoryDefault();
+                $di->set('url', function () use($config): Url {
+                    return (new Url())->setBaseUri($config->url->baseUri);
+                });
+                $di->set('router', function (): Router {
+                    $router = (new Router())
+                        ->removeExtraSlashes(true)
+                        ->setDefaultNamespace('Controller\\')
+                        ->setDefaultController('Index')
+                        ->setDefaultAction('index');
 
-                $di->set('url',
-                    function (): Url {
-                        return (new Url())->setBaseUri($this->config->url->baseUri);
-                    }
-                );
-                $di->set('router',
-                    function (): Router {
-                        $router = (new Router())
-                            ->removeExtraSlashes(true)
-                            ->setDefaultNamespace('Controller\\')
-                            ->setDefaultController('Index')
-                            ->setDefaultAction('index');
-
-                        return $router;
-                    }
-                );
+                    return $router;
+                });
                 // Note: Very poor astraction for using other authenticators.
-                $di->setShared('auth', function (): Jwt {
-                    return new Jwt($this->config->jwt->secretKey);
+                $di->setShared('auth', function () use($config): Jwt {
+                    return new Jwt($config->jwt->secretKey);
                 });
 
                 break;
             case self::CONTEXT_CLI:
-                $di = new Cli();
-
                 $di->setShared('dispatcher', function (): Dispatcher {
                     $dispatcher = new Dispatcher();
                     $dispatcher->setDefaultNamespace('Task');
@@ -135,16 +131,12 @@ final class Bootstrap
                 Php::assert(false);
         }
 
-        $di->setShared('beanstalk',
-            function (): Beanstalk {
-                return new Beanstalk($this->config->beanstalk->toArray());
-            }
-        );
-        $di->setShared('mongo',
-            function (): Client {
-                return (new Client())->selectDatabase($this->config->mongo->database);
-            }
-        );
+        $di->setShared('beanstalk', function () use($config): Beanstalk {
+            return new Beanstalk($config->beanstalk->toArray());
+        });
+        $di->setShared('mongo', function () use($config): Database {
+            return (new Client())->selectDatabase($config->mongo->database);
+        });
         $di->setShared('collectionManager', function (): Manager {
             return new Manager();
         });
@@ -154,18 +146,13 @@ final class Bootstrap
          * it wouldn't normally be appropriate to deliver something like this to production without
          * careful review and consideration.
          */
-        $di->setShared(
-            'security',
-            function (): Security {
-                return new Security();
-            }
-        );
+        $di->setShared('security', function (): Security {
+            return new Security();
+        });
 
-        $di->setShared('session',
-            function (): Session {
-                return new Session();
-            }
-        );
+        $di->setShared('session', function (): Session {
+            return new Session();
+        });
 
         return $di;
     }
